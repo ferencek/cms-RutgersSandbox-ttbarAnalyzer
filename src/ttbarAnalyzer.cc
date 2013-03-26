@@ -13,7 +13,7 @@
 //
 // Original Author:  margaret zientek
 //         Created:  Fri Feb  8 12:31:07 CST 2013
-// $Id$
+// $Id: ttbarAnalyzer.cc,v 1.1 2013/03/26 14:18:05 ferencek Exp $
 //
 // Analysis of a ttbar MC sample based on di-leptonic (TOP-12-007) and semi-leptonic (TOP-12-006) ttbar cross section measurements
 //
@@ -33,12 +33,14 @@
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/METReco/interface/GenMET.h"
 #include "DataFormats/METReco/interface/GenMETFwd.h"
-#include "DataFormats/Math/interface/deltaR.h"
+#include "SimDataFormats/JetMatching/interface/JetFlavour.h"
+#include "SimDataFormats/JetMatching/interface/JetFlavourMatching.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "DataFormats/Math/interface/deltaR.h"
 #include "TH1D.h"
 #include "TH2D.h"
+#include "TRandom3.h"
 
 //
 // class declaration
@@ -71,6 +73,7 @@ class ttbarAnalyzer : public edm::EDAnalyzer {
 
     const edm::InputTag         genParticleTag;
     const edm::InputTag         genJetTag;
+    const edm::InputTag         jetFlavorTag;
     const edm::InputTag         genMetTag;
     const double                elecPtMinDiLept;
     const double                elecAbsEtaMaxDiLept;
@@ -100,7 +103,6 @@ class ttbarAnalyzer : public edm::EDAnalyzer {
     TH1D *h1_CutFlow_diLept_elmu;
     TH1D *h1_CutFlow_semiLept_el;
     TH1D *h1_CutFlow_semiLept_mu;
-
 };
 
 //
@@ -118,6 +120,7 @@ ttbarAnalyzer::ttbarAnalyzer(const edm::ParameterSet& iConfig) :
 
   genParticleTag(iConfig.getParameter<edm::InputTag>("GenParticleTag")),
   genJetTag(iConfig.getParameter<edm::InputTag>("GenJetTag")),
+  jetFlavorTag(iConfig.getParameter<edm::InputTag>("JetFlavorTag")),
   genMetTag(iConfig.getParameter<edm::InputTag>("GenMetTag")),
   elecPtMinDiLept (iConfig.getParameter<double> ("ElecPtMinDiLept")),
   elecAbsEtaMaxDiLept (iConfig.getParameter<double> ("ElecAbsEtaMaxDiLept")),
@@ -171,7 +174,7 @@ ttbarAnalyzer::~ttbarAnalyzer()
 void
 ttbarAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-  double noCuts=0, leptonCuts=1, diLeptInvMassCuts=2, diLeptJetCuts=3, diLeptMETCut=4, semiLeptJetCuts=2;
+  double noCuts=0, leptonCountCuts=1, diLeptInvMassCuts=2, diLeptZVeto=3, diLeptJetCuts=4, diLeptMETCut=5, diLeptBtagCut=6, semiLeptJetCuts=2, semiLeptBtagCut=3;
 
   h1_CutFlow_diLept_elel->Fill(noCuts);
   h1_CutFlow_diLept_mumu->Fill(noCuts);
@@ -189,8 +192,11 @@ ttbarAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   bool semiLept = false;
 
   int nElecDiLept=0, nMuonDiLept=0, nElecSemiLept=0, nMuonSemiLept=0;
+
   std::vector<const reco::GenParticle*> elec_diLept, muon_diLept, elec_semiLept, muon_semiLept;
   std::vector<const reco::GenJet*> jet_diLept, jet_semiLept;
+  std::map<const reco::GenJet*, int> jet_flavor;
+  std::map<const reco::GenJet*, bool> jet_btag_L, jet_btag_M;
 
   edm::Handle<reco::GenParticleCollection> genParticles;
   iEvent.getByLabel(genParticleTag, genParticles);
@@ -198,10 +204,14 @@ ttbarAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   edm::Handle<reco::GenJetCollection> genJets;
   iEvent.getByLabel(genJetTag, genJets);
 
+  edm::Handle<reco::JetFlavourMatchingCollection> jetFlavor;
+  iEvent.getByLabel(jetFlavorTag, jetFlavor);
+
   edm::Handle<reco::GenMETCollection> mets;
   iEvent.getByLabel(genMetTag, mets);
 
 
+  // loop over GenParticles and select electrons and muons
   for( reco::GenParticleCollection::const_iterator it = genParticles->begin(); it != genParticles->end(); ++it )
   {
 
@@ -264,8 +274,8 @@ ttbarAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 
   // check if event is di-leptonic (here we are ignoring lepton charge)
-  if ( nElecDiLept >= 2 && nMuonDiLept == 0 ) { h1_CutFlow_diLept_elel->Fill(leptonCuts); diElec = true; }
-  else if ( nMuonDiLept >= 2 && nElecDiLept == 0 ) { h1_CutFlow_diLept_mumu->Fill(leptonCuts); diMuon = true; }
+  if ( nElecDiLept >= 2 && nMuonDiLept == 0 ) { h1_CutFlow_diLept_elel->Fill(leptonCountCuts); diElec = true; }
+  else if ( nMuonDiLept >= 2 && nElecDiLept == 0 ) { h1_CutFlow_diLept_mumu->Fill(leptonCountCuts); diMuon = true; }
   else if ( nElecDiLept>=1 && nMuonDiLept>=1 ) // this is a more complicated case and we need to select the two leading leptons
   {
     int nElecAboveMuon1 = 0, nElecAboveMuon2 = 0;
@@ -276,19 +286,19 @@ ttbarAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         if( (*it)->pt() > muon_diLept.at(1)->pt() ) nElecAboveMuon2++;
     }
 
-    if( nElecAboveMuon1>=2 ) { h1_CutFlow_diLept_elel->Fill(leptonCuts); diElec = true; }
-    else if ( nElecAboveMuon1==1 ) { h1_CutFlow_diLept_elmu->Fill(leptonCuts); diElMu = true; }
-    else if ( nElecAboveMuon1==0 && muon_diLept.size()==1 ) { h1_CutFlow_diLept_elmu->Fill(leptonCuts); diElMu = true; }
-    else if ( nElecAboveMuon1==0 && muon_diLept.size()>1 && nElecAboveMuon2==0 ) { h1_CutFlow_diLept_mumu->Fill(leptonCuts); diMuon = true; }
-    else if ( nElecAboveMuon1==0 && muon_diLept.size()>1 && nElecAboveMuon2>0 ) { h1_CutFlow_diLept_elmu->Fill(leptonCuts); diElMu = true; }
+    if( nElecAboveMuon1>=2 ) { h1_CutFlow_diLept_elel->Fill(leptonCountCuts); diElec = true; }
+    else if ( nElecAboveMuon1==1 ) { h1_CutFlow_diLept_elmu->Fill(leptonCountCuts); diElMu = true; }
+    else if ( nElecAboveMuon1==0 && muon_diLept.size()==1 ) { h1_CutFlow_diLept_elmu->Fill(leptonCountCuts); diElMu = true; }
+    else if ( nElecAboveMuon1==0 && muon_diLept.size()>1 && nElecAboveMuon2==0 ) { h1_CutFlow_diLept_mumu->Fill(leptonCountCuts); diMuon = true; }
+    else if ( nElecAboveMuon1==0 && muon_diLept.size()>1 && nElecAboveMuon2>0 ) { h1_CutFlow_diLept_elmu->Fill(leptonCountCuts); diElMu = true; }
   }
 
   if ( diElec || diMuon || diElMu ) diLept = true;
 
 
   // check if event is semi-leptonic (but also not di-leptonic at the same time)
-  if ( !diLept && nElecSemiLept == 1 ) { h1_CutFlow_semiLept_el->Fill(leptonCuts); semiEl = true; }
-  else if ( !diLept && nMuonSemiLept == 1 ) { h1_CutFlow_semiLept_mu->Fill(leptonCuts); semiMu = true; }
+  if ( !diLept && nElecSemiLept == 1 ) { h1_CutFlow_semiLept_el->Fill(leptonCountCuts); semiEl = true; }
+  else if ( !diLept && nMuonSemiLept == 1 ) { h1_CutFlow_semiLept_mu->Fill(leptonCountCuts); semiMu = true; }
 
   if ( semiEl || semiMu) semiLept = true;
 
@@ -296,11 +306,46 @@ ttbarAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   if( !(diLept || semiLept) ) return; // return if event is neither di-leptonic nor semi-leptonic
 
 
+  TRandom3* rand = new TRandom3( iEvent.id().run() + iEvent.id().event() ); // initialize random number generator
+  // loop over jets and establish flavor and b-tag information
+  for( reco::GenJetCollection::const_iterator it = genJets->begin(); it != genJets->end(); ++it )
+  {
+    unsigned idx = (it - genJets->begin());
+    edm::RefToBase<reco::Jet> jetRef(edm::Ref<reco::GenJetCollection>(genJets, idx));
+
+    jet_flavor[&(*it)] = (*jetFlavor)[jetRef].getFlavour();
+
+    // throw a die
+    double rnd = rand->Uniform(0., 1.);
+
+    bool btagged_L = false, btagged_M = false;
+    if( abs(jet_flavor[&(*it)])==5 ) // if b jet
+    {
+      if( rnd < 0.82 ) btagged_L = true;
+      if( rnd < 0.67 ) btagged_M = true;
+    }
+    else if( abs(jet_flavor[&(*it)])==4 ) // if c jet
+    {
+      if( rnd < 0.38 ) btagged_L = true;
+      if( rnd < 0.17 ) btagged_M = true;
+    }
+    else
+    {
+      if( rnd < 0.1 )  btagged_L = true;
+      if( rnd < 0.01 ) btagged_M = true;
+    }
+
+    jet_btag_L[&(*it)] = btagged_L;
+    jet_btag_M[&(*it)] = btagged_M;
+  }
+
+
   // if event is di-leptonic
   if( diLept )
   {
     std::vector<const reco::GenParticle*> lept_diLept;
     bool passDiLeptInvMassCuts = false;
+    bool passZVeto = false;
 
     // di-lepton invariant mass cuts
     if( diElec )
@@ -310,7 +355,8 @@ ttbarAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       double diLeptMass = (lept_diLept.at(0)->p4() + lept_diLept.at(1)->p4()).mass();
 
-      if( diLeptMass>diLeptMassMin && (diLeptMass<zVetoMin || diLeptMass>zVetoMax) ) passDiLeptInvMassCuts = true;
+      if( diLeptMass > diLeptMassMin ) passDiLeptInvMassCuts = true;
+      if( diLeptMass < zVetoMin || diLeptMass > zVetoMax ) passZVeto = true;
     }
     else if( diMuon )
     {
@@ -319,7 +365,8 @@ ttbarAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       double diLeptMass = (lept_diLept.at(0)->p4() + lept_diLept.at(1)->p4()).mass();
 
-      if( diLeptMass>diLeptMassMin && (diLeptMass<zVetoMin || diLeptMass>zVetoMax) ) passDiLeptInvMassCuts = true;
+      if( diLeptMass > diLeptMassMin ) passDiLeptInvMassCuts = true;
+      if( diLeptMass < zVetoMin || diLeptMass > zVetoMax ) passZVeto = true;
     }
     else if( diElMu )
     {
@@ -328,7 +375,8 @@ ttbarAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       double diLeptMass = (lept_diLept.at(0)->p4() + lept_diLept.at(1)->p4()).mass();
 
-      if( diLeptMass>diLeptMassMin ) passDiLeptInvMassCuts = true;
+      if( diLeptMass > diLeptMassMin ) passDiLeptInvMassCuts = true;
+      passZVeto = true; // always true for el-mu channel
     }
 
     if( passDiLeptInvMassCuts )
@@ -336,6 +384,15 @@ ttbarAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       if( diElec )      h1_CutFlow_diLept_elel->Fill(diLeptInvMassCuts);
       else if( diMuon ) h1_CutFlow_diLept_mumu->Fill(diLeptInvMassCuts);
       else if( diElMu ) h1_CutFlow_diLept_elmu->Fill(diLeptInvMassCuts);
+    }
+    else
+      return;
+
+    if( passZVeto )
+    {
+      if( diElec )      h1_CutFlow_diLept_elel->Fill(diLeptZVeto);
+      else if( diMuon ) h1_CutFlow_diLept_mumu->Fill(diLeptZVeto);
+      else if( diElMu ) h1_CutFlow_diLept_elmu->Fill(diLeptZVeto);
     }
     else
       return;
@@ -363,12 +420,28 @@ ttbarAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 
     // MET cut
-    if( diElec && mets->front().pt()>metCutDiLept )     h1_CutFlow_diLept_elel->Fill(diLeptMETCut);
-    else if( diMuon && mets->front().pt()>metCutDiLept) h1_CutFlow_diLept_mumu->Fill(diLeptMETCut);
-    else if( diElMu )                                   h1_CutFlow_diLept_elmu->Fill(diLeptMETCut);
+    if( diElec && mets->front().pt()>metCutDiLept )      h1_CutFlow_diLept_elel->Fill(diLeptMETCut);
+    else if( diMuon && mets->front().pt()>metCutDiLept ) h1_CutFlow_diLept_mumu->Fill(diLeptMETCut);
+    else if( diElMu )                                    h1_CutFlow_diLept_elmu->Fill(diLeptMETCut);
+    else return;
+
+
+    // number of b-tagged jets
+    int nBtaggedJets = 0;
+    for( std::vector<const reco::GenJet*>::const_iterator it = jet_diLept.begin(); it != jet_diLept.end(); ++it )
+      if( jet_btag_L[*it] ) ++nBtaggedJets;
+
+    if( nBtaggedJets>=1 )
+    {
+      if( diElec )      h1_CutFlow_diLept_elel->Fill(diLeptBtagCut);
+      else if( diMuon ) h1_CutFlow_diLept_mumu->Fill(diLeptBtagCut);
+      else if( diElMu ) h1_CutFlow_diLept_elmu->Fill(diLeptBtagCut);
+    }
+    else
+      return;
   }
   // if event is semi-leptonic
-  if( semiLept )
+  else if( semiLept )
   {
     // loop over jets
     for( reco::GenJetCollection::const_iterator it = genJets->begin(); it != genJets->end(); ++it )
@@ -388,6 +461,20 @@ ttbarAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     {
       if( semiEl )      h1_CutFlow_semiLept_el->Fill(semiLeptJetCuts);
       else if( semiMu ) h1_CutFlow_semiLept_mu->Fill(semiLeptJetCuts);
+    }
+    else
+      return;
+
+
+    // number of b-tagged jets
+    int nBtaggedJets = 0;
+    for( std::vector<const reco::GenJet*>::const_iterator it = jet_semiLept.begin(); it != jet_semiLept.end(); ++it )
+      if( jet_btag_M[*it] ) ++nBtaggedJets;
+
+    if( nBtaggedJets>=1 )
+    {
+      if( semiEl )      h1_CutFlow_semiLept_el->Fill(semiLeptBtagCut);
+      else if( semiMu ) h1_CutFlow_semiLept_mu->Fill(semiLeptBtagCut);
     }
     else
       return;
