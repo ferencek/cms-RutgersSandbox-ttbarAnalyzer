@@ -35,28 +35,6 @@ process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(options
 ## Input files
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-       # Di-leptonic ttbar
-       #'/store/mc/Summer12_DR53X/TTJets_FullLeptMGDecays_8TeV-madgraph/AODSIM/PU_S10_START53_V7A-v2/00001/FEAC1583-031B-E211-AF54-00215E2283FA.root',
-       #'/store/mc/Summer12_DR53X/TTJets_FullLeptMGDecays_8TeV-madgraph/AODSIM/PU_S10_START53_V7A-v2/00001/FE1884B5-231B-E211-8822-00215E21D57C.root',
-       #'/store/mc/Summer12_DR53X/TTJets_FullLeptMGDecays_8TeV-madgraph/AODSIM/PU_S10_START53_V7A-v2/00001/FCFD5C18-2D1B-E211-9512-001A645C1FFC.root',
-       #'/store/mc/Summer12_DR53X/TTJets_FullLeptMGDecays_8TeV-madgraph/AODSIM/PU_S10_START53_V7A-v2/00001/FC2A0CAC-0D1B-E211-9017-00215E221EEA.root',
-       #'/store/mc/Summer12_DR53X/TTJets_FullLeptMGDecays_8TeV-madgraph/AODSIM/PU_S10_START53_V7A-v2/00001/FAAC928B-091B-E211-8858-00215E21D690.root',
-       #'/store/mc/Summer12_DR53X/TTJets_FullLeptMGDecays_8TeV-madgraph/AODSIM/PU_S10_START53_V7A-v2/00001/F8FEE31B-231B-E211-996B-00215E21DD0E.root',
-       #'/store/mc/Summer12_DR53X/TTJets_FullLeptMGDecays_8TeV-madgraph/AODSIM/PU_S10_START53_V7A-v2/00001/F8B70B6D-2D1B-E211-88B1-00215E21DAB0.root',
-       #'/store/mc/Summer12_DR53X/TTJets_FullLeptMGDecays_8TeV-madgraph/AODSIM/PU_S10_START53_V7A-v2/00001/F8805736-EB1A-E211-AA09-00215E2222DA.root',
-       #'/store/mc/Summer12_DR53X/TTJets_FullLeptMGDecays_8TeV-madgraph/AODSIM/PU_S10_START53_V7A-v2/00001/F87CDCEE-ED1A-E211-9AB9-00215E222256.root'
-       # Semi-leptonic ttbar
-       #'/store/mc/Summer12_DR53X/TTJets_SemiLeptMGDecays_8TeV-madgraph/AODSIM/PU_S10_START53_V7A_ext-v1/00001/E8B4F7A1-1025-E211-BB45-002590200B40.root',
-       #'/store/mc/Summer12_DR53X/TTJets_SemiLeptMGDecays_8TeV-madgraph/AODSIM/PU_S10_START53_V7A_ext-v1/00001/E8324A46-0525-E211-BD58-001E6739751C.root',
-       #'/store/mc/Summer12_DR53X/TTJets_SemiLeptMGDecays_8TeV-madgraph/AODSIM/PU_S10_START53_V7A_ext-v1/00001/E870615A-2825-E211-A499-002590200B60.root',
-       #'/store/mc/Summer12_DR53X/TTJets_SemiLeptMGDecays_8TeV-madgraph/AODSIM/PU_S10_START53_V7A_ext-v1/00001/EA0D1319-F624-E211-A6EA-001E67396BAD.root',
-       #'/store/mc/Summer12_DR53X/TTJets_SemiLeptMGDecays_8TeV-madgraph/AODSIM/PU_S10_START53_V7A_ext-v1/00001/E885EA9C-D924-E211-A1F5-001E673981C4.root',
-       #'/store/mc/Summer12_DR53X/TTJets_SemiLeptMGDecays_8TeV-madgraph/AODSIM/PU_S10_START53_V7A_ext-v1/00001/EA4BE856-D724-E211-ABBD-002590200B14.root',
-       #'/store/mc/Summer12_DR53X/TTJets_SemiLeptMGDecays_8TeV-madgraph/AODSIM/PU_S10_START53_V7A_ext-v1/00001/E89F6565-4925-E211-A8B7-001E67397D7D.root',
-       #'/store/mc/Summer12_DR53X/TTJets_SemiLeptMGDecays_8TeV-madgraph/AODSIM/PU_S10_START53_V7A_ext-v1/00001/EA583F0B-0F25-E211-9369-001E67396C9D.root',
-       #'/store/mc/Summer12_DR53X/TTJets_SemiLeptMGDecays_8TeV-madgraph/AODSIM/PU_S10_START53_V7A_ext-v1/00001/EA6146BB-EA24-E211-9F28-001E67396577.root',
-       #'/store/mc/Summer12_DR53X/TTJets_SemiLeptMGDecays_8TeV-madgraph/AODSIM/PU_S10_START53_V7A_ext-v1/00001/EA6B1BAB-9D25-E211-B921-0025902008E4.root'
-       # Inclusive ttbar
        '/store/mc/Summer12_DR53X/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/AODSIM/PU_S10_START53_V7A-v1/0000/04E4CE54-CFE1-E111-9801-003048D439C6.root',
        '/store/mc/Summer12_DR53X/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/AODSIM/PU_S10_START53_V7A-v1/0000/06035EC2-E3E1-E111-804B-003048C69408.root',
        '/store/mc/Summer12_DR53X/TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola/AODSIM/PU_S10_START53_V7A-v1/0000/FED775BD-B8E1-E111-8ED5-003048C69036.root',
@@ -78,10 +56,30 @@ process.TFileService = cms.Service('TFileService',
    fileName = cms.string('output.root')
 )
 
+process.myPartons = cms.EDProducer("PartonSelector",
+    src = cms.InputTag("genParticles"),
+    withLeptons = cms.bool(False)
+)
+
+# Flavour byReference
+process.AK5byRef = cms.EDProducer("JetPartonMatcher",
+    jets = cms.InputTag("ak5GenJets"),
+    coneSizeToAssociate = cms.double(0.3),
+    partons = cms.InputTag("myPartons")
+)
+
+# Flavour byValue AlgoDef
+process.AK5byValAlgo = cms.EDProducer("JetFlavourIdentifier",
+    srcByReference = cms.InputTag("AK5byRef"),
+    physicsDefinition = cms.bool(False),
+    leptonInfo = cms.bool(True)
+)
+
 ## EDAnalyzer
 process.analyzer = cms.EDAnalyzer('ttbarAnalyzer',
     GenParticleTag            = cms.InputTag('genParticles'),
     GenJetTag                 = cms.InputTag('ak5GenJets'),
+    JetFlavorTag              = cms.InputTag('AK5byValAlgo'),
     GenMetTag                 = cms.InputTag('genMetTrue'),
     ElecPtMinDiLept           = cms.double(20),
     ElecAbsEtaMaxDiLept       = cms.double(2.5),
@@ -105,4 +103,9 @@ process.analyzer = cms.EDAnalyzer('ttbarAnalyzer',
     JetLeptonDeltaRSemiLept   = cms.double(0.5)
 )
 
-process.p = cms.Path(process.analyzer)
+process.p = cms.Path(
+  process.myPartons
+  * process.AK5byRef
+  * process.AK5byValAlgo
+  * process.analyzer
+)
