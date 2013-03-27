@@ -48,7 +48,7 @@
 
 template <class T> struct ordering_Pt {
     ordering_Pt() {}
-    bool operator ()(const T* const& a, const T* const& b) { return a->pt() > b->pt(); }
+    bool operator ()(T const& a, T const& b) { return (a.first->pt() + a.second->pt()) > (b.first->pt() + b.second->pt()); }
 };
 
 class ttbarAnalyzer : public edm::EDAnalyzer {
@@ -191,9 +191,7 @@ ttbarAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   bool semiMu = false;
   bool semiLept = false;
 
-  int nElecDiLept=0, nMuonDiLept=0, nElecSemiLept=0, nMuonSemiLept=0;
-
-  std::vector<const reco::GenParticle*> elec_diLept, muon_diLept, elec_semiLept, muon_semiLept;
+  std::vector<const reco::GenParticle*> elec_diLept, muon_diLept, lept_diLept, elec_semiLept, muon_semiLept;
   std::vector<const reco::GenJet*> jet_diLept, jet_semiLept;
   std::map<const reco::GenJet*, int> jet_flavor;
   std::map<const reco::GenJet*, bool> jet_btag_L, jet_btag_M;
@@ -259,46 +257,53 @@ ttbarAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   }
 
 
-  // count leptons
-  nElecDiLept = elec_diLept.size();
-  nMuonDiLept = muon_diLept.size();
-  nElecSemiLept = elec_semiLept.size();
-  nMuonSemiLept = muon_semiLept.size();
+  // form all possible pairs of oppositely changed leptons
+  std::vector<std::pair<const reco::GenParticle*,const reco::GenParticle*> > lepton_pairs;
 
-
-  // sort leptons by Pt (if more than 1 lepton found)
-  if( nElecDiLept>1 )   std::sort(elec_diLept.begin(), elec_diLept.end(), ordering_Pt<reco::GenParticle>());
-  if( nMuonDiLept>1 )   std::sort(muon_diLept.begin(), muon_diLept.end(), ordering_Pt<reco::GenParticle>());
-  //if( nElecSemiLept>1 ) std::sort(elec_semiLept.begin(), elec_semiLept.end(), ordering_Pt<reco::GenParticle>());
-  //if( nMuonSemiLept>1 ) std::sort(muon_semiLept.begin(), muon_semiLept.end(), ordering_Pt<reco::GenParticle>());
-
-
-  // check if event is di-leptonic (here we are ignoring lepton charge)
-  if ( nElecDiLept >= 2 && nMuonDiLept == 0 ) { h1_CutFlow_diLept_elel->Fill(leptonCountCuts); diElec = true; }
-  else if ( nMuonDiLept >= 2 && nElecDiLept == 0 ) { h1_CutFlow_diLept_mumu->Fill(leptonCountCuts); diMuon = true; }
-  else if ( nElecDiLept>=1 && nMuonDiLept>=1 ) // this is a more complicated case and we need to select the two leading leptons
+  for(std::vector<const reco::GenParticle*>::const_iterator eIt = elec_diLept.begin(); eIt != elec_diLept.end(); ++eIt )
   {
-    int nElecAboveMuon1 = 0, nElecAboveMuon2 = 0;
-    for(std::vector<const reco::GenParticle*>::const_iterator it = elec_diLept.begin(); it != elec_diLept.end(); ++it )
+    for(std::vector<const reco::GenParticle*>::const_iterator e2It = (eIt+1); e2It != elec_diLept.end(); ++e2It )
     {
-      if( (*it)->pt() > muon_diLept.at(0)->pt() ) nElecAboveMuon1++;
-      if( muon_diLept.size()>1 )
-        if( (*it)->pt() > muon_diLept.at(1)->pt() ) nElecAboveMuon2++;
+      if( (*eIt)->charge()==-(*e2It)->charge() ) lepton_pairs.push_back( std::make_pair(*eIt,*e2It) );
     }
 
-    if( nElecAboveMuon1>=2 ) { h1_CutFlow_diLept_elel->Fill(leptonCountCuts); diElec = true; }
-    else if ( nElecAboveMuon1==1 ) { h1_CutFlow_diLept_elmu->Fill(leptonCountCuts); diElMu = true; }
-    else if ( nElecAboveMuon1==0 && muon_diLept.size()==1 ) { h1_CutFlow_diLept_elmu->Fill(leptonCountCuts); diElMu = true; }
-    else if ( nElecAboveMuon1==0 && muon_diLept.size()>1 && nElecAboveMuon2==0 ) { h1_CutFlow_diLept_mumu->Fill(leptonCountCuts); diMuon = true; }
-    else if ( nElecAboveMuon1==0 && muon_diLept.size()>1 && nElecAboveMuon2>0 ) { h1_CutFlow_diLept_elmu->Fill(leptonCountCuts); diElMu = true; }
+    for(std::vector<const reco::GenParticle*>::const_iterator mIt = muon_diLept.begin(); mIt != muon_diLept.end(); ++mIt )
+    {
+      if( (*eIt)->charge()==-(*mIt)->charge() ) lepton_pairs.push_back( std::make_pair(*eIt,*mIt) );
+    }
+  }
+  for(std::vector<const reco::GenParticle*>::const_iterator mIt = muon_diLept.begin(); mIt != muon_diLept.end(); ++mIt )
+  {
+    for(std::vector<const reco::GenParticle*>::const_iterator m2It = (mIt+1); m2It != muon_diLept.end(); ++m2It )
+    {
+      if( (*mIt)->charge()==-(*m2It)->charge() ) lepton_pairs.push_back( std::make_pair(*mIt,*m2It) );
+    }
+  }
+
+  // sort lepton pairs by their sum Pt
+  if( lepton_pairs.size()>1 ) std::sort(lepton_pairs.begin(), lepton_pairs.end(), ordering_Pt<std::pair<const reco::GenParticle*,const reco::GenParticle*> >());
+
+  // check if event is di-leptonic
+  if( lepton_pairs.size()>0 )
+  {
+    lept_diLept.push_back(lepton_pairs.at(0).first);
+    lept_diLept.push_back(lepton_pairs.at(0).second);
+
+    int nElecDiLept = 0;
+    if( abs(lept_diLept.at(0)->pdgId())==11 ) ++nElecDiLept;
+    if( abs(lept_diLept.at(1)->pdgId())==11 ) ++nElecDiLept;
+
+    if( nElecDiLept==2 )       { h1_CutFlow_diLept_elel->Fill(leptonCountCuts); diElec = true; }
+    else if ( nElecDiLept==1 ) { h1_CutFlow_diLept_elmu->Fill(leptonCountCuts); diElMu = true; }
+    else if ( nElecDiLept==0 ) { h1_CutFlow_diLept_mumu->Fill(leptonCountCuts); diMuon = true; }
   }
 
   if ( diElec || diMuon || diElMu ) diLept = true;
 
 
   // check if event is semi-leptonic (but also not di-leptonic at the same time)
-  if ( !diLept && nElecSemiLept == 1 ) { h1_CutFlow_semiLept_el->Fill(leptonCountCuts); semiEl = true; }
-  else if ( !diLept && nMuonSemiLept == 1 ) { h1_CutFlow_semiLept_mu->Fill(leptonCountCuts); semiMu = true; }
+  if ( !diLept && elec_semiLept.size() == 1 ) { h1_CutFlow_semiLept_el->Fill(leptonCountCuts); semiEl = true; }
+  else if ( !diLept && muon_semiLept.size() == 1 ) { h1_CutFlow_semiLept_mu->Fill(leptonCountCuts); semiMu = true; }
 
   if ( semiEl || semiMu) semiLept = true;
 
@@ -343,7 +348,6 @@ ttbarAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   // if event is di-leptonic
   if( diLept )
   {
-    std::vector<const reco::GenParticle*> lept_diLept;
     bool passDiLeptInvMassCuts = false;
     bool passZVeto = false;
 
