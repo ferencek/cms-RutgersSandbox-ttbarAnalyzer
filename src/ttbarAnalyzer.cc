@@ -13,7 +13,7 @@
 //
 // Original Author:  margaret zientek
 //         Created:  Fri Feb  8 12:31:07 CST 2013
-// $Id: ttbarAnalyzer.cc,v 1.1 2013/03/26 14:18:05 ferencek Exp $
+// $Id: ttbarAnalyzer.cc,v 1.3 2013/03/27 00:43:29 ferencek Exp $
 //
 // Analysis of a ttbar MC sample based on di-leptonic (TOP-12-007) and semi-leptonic (TOP-12-006) ttbar cross section measurements
 //
@@ -103,6 +103,24 @@ class ttbarAnalyzer : public edm::EDAnalyzer {
     TH1D *h1_CutFlow_diLept_elmu;
     TH1D *h1_CutFlow_semiLept_el;
     TH1D *h1_CutFlow_semiLept_mu;
+
+    TH1D *h1_bTagMultiplicity_diLept_elel;
+    TH1D *h1_bTagMultiplicity_diLept_mumu;
+    TH1D *h1_bTagMultiplicity_diLept_elmu;
+    TH1D *h1_bTagMultiplicity_semiLept_el;
+    TH1D *h1_bTagMultiplicity_semiLept_mu;
+
+    TH1D *h1_mindRbJetJet_diLept_elel;
+    TH1D *h1_mindRbJetJet_diLept_mumu;
+    TH1D *h1_mindRbJetJet_diLept_elmu;
+    TH1D *h1_mindRbJetJet_semiLept_el;
+    TH1D *h1_mindRbJetJet_semiLept_mu;
+
+    TH1D *h1_mindRbJetbJet_diLept_elel;
+    TH1D *h1_mindRbJetbJet_diLept_mumu;
+    TH1D *h1_mindRbJetbJet_diLept_elmu;
+    TH1D *h1_mindRbJetbJet_semiLept_el;
+    TH1D *h1_mindRbJetbJet_semiLept_mu;
 };
 
 //
@@ -154,6 +172,24 @@ ttbarAnalyzer::ttbarAnalyzer(const edm::ParameterSet& iConfig) :
   h1_CutFlow_diLept_elmu = fs->make<TH1D>("h1_CutFlow_diLept_elmu",";Cut number;Number of events",ncutBins,cutmin,cutmax);
   h1_CutFlow_semiLept_el = fs->make<TH1D>("h1_CutFlow_semiLept_el",";Cut number;Number of events",ncutBins,cutmin,cutmax);
   h1_CutFlow_semiLept_mu = fs->make<TH1D>("h1_CutFlow_semiLept_mu",";Cut number;Number of events",ncutBins,cutmin,cutmax);
+
+  h1_bTagMultiplicity_diLept_elel = fs->make<TH1D>("h1_bTagMultiplicity_diLept_elel",";Number of b tags;Number of events",6,-0.5,5.5);
+  h1_bTagMultiplicity_diLept_mumu = fs->make<TH1D>("h1_bTagMultiplicity_diLept_mumu",";Number of b tags;Number of events",6,-0.5,5.5);
+  h1_bTagMultiplicity_diLept_elmu = fs->make<TH1D>("h1_bTagMultiplicity_diLept_elmu",";Number of b tags;Number of events",6,-0.5,5.5);
+  h1_bTagMultiplicity_semiLept_el = fs->make<TH1D>("h1_bTagMultiplicity_semiLept_el",";Number of b tags;Number of events",6,-0.5,5.5);
+  h1_bTagMultiplicity_semiLept_mu = fs->make<TH1D>("h1_bTagMultiplicity_semiLept_mu",";Number of b tags;Number of events",6,-0.5,5.5);
+
+  h1_mindRbJetJet_diLept_elel = fs->make<TH1D>("h1_mindRbJetJet_diLept_elel",";min#DeltaR(b jet,jet);Number of entries",100,0.,5.);
+  h1_mindRbJetJet_diLept_mumu = fs->make<TH1D>("h1_mindRbJetJet_diLept_mumu",";min#DeltaR(b jet,jet);Number of entries",100,0.,5.);
+  h1_mindRbJetJet_diLept_elmu = fs->make<TH1D>("h1_mindRbJetJet_diLept_elmu",";min#DeltaR(b jet,jet);Number of entries",100,0.,5.);
+  h1_mindRbJetJet_semiLept_el = fs->make<TH1D>("h1_mindRbJetJet_semiLept_el",";min#DeltaR(b jet,jet);Number of entries",100,0.,5.);
+  h1_mindRbJetJet_semiLept_mu = fs->make<TH1D>("h1_mindRbJetJet_semiLept_mu",";min#DeltaR(b jet,jet);Number of entries",100,0.,5.);
+
+  h1_mindRbJetbJet_diLept_elel = fs->make<TH1D>("h1_mindRbJetbJet_diLept_elel",";min#DeltaR(b jet,b jet);Number of entries",100,0.,5.);
+  h1_mindRbJetbJet_diLept_mumu = fs->make<TH1D>("h1_mindRbJetbJet_diLept_mumu",";min#DeltaR(b jet,b jet);Number of entries",100,0.,5.);
+  h1_mindRbJetbJet_diLept_elmu = fs->make<TH1D>("h1_mindRbJetbJet_diLept_elmu",";min#DeltaR(b jet,b jet);Number of entries",100,0.,5.);
+  h1_mindRbJetbJet_semiLept_el = fs->make<TH1D>("h1_mindRbJetbJet_semiLept_el",";min#DeltaR(b jet,b jet);Number of entries",100,0.,5.);
+  h1_mindRbJetbJet_semiLept_mu = fs->make<TH1D>("h1_mindRbJetbJet_semiLept_mu",";min#DeltaR(b jet,b jet);Number of entries",100,0.,5.);
 }
 
 
@@ -192,7 +228,7 @@ ttbarAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   bool semiLept = false;
 
   std::vector<const reco::GenParticle*> elec_diLept, muon_diLept, lept_diLept, elec_semiLept, muon_semiLept;
-  std::vector<const reco::GenJet*> jet_diLept, jet_semiLept;
+  std::vector<const reco::GenJet*> jet_diLept, jet_diLept_btagged, jet_semiLept, jet_semiLept_btagged;
   std::map<const reco::GenJet*, int> jet_flavor;
   std::map<const reco::GenJet*, bool> jet_btag_L, jet_btag_M;
 
@@ -311,7 +347,7 @@ ttbarAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   if( !(diLept || semiLept) ) return; // return if event is neither di-leptonic nor semi-leptonic
 
 
-  TRandom3* rand = new TRandom3( iEvent.id().run() + iEvent.id().event() ); // initialize random number generator
+  TRandom3 rand( iEvent.id().run() + iEvent.id().event() ); // initialize random number generator
   // loop over jets and establish flavor and b-tag information
   for( reco::GenJetCollection::const_iterator it = genJets->begin(); it != genJets->end(); ++it )
   {
@@ -321,7 +357,7 @@ ttbarAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     jet_flavor[&(*it)] = (*jetFlavor)[jetRef].getFlavour();
 
     // throw a die
-    double rnd = rand->Uniform(0., 1.);
+    double rnd = rand.Uniform(0., 1.);
 
     bool btagged_L = false, btagged_M = false;
     if( abs(jet_flavor[&(*it)])==5 ) // if b jet
@@ -430,16 +466,84 @@ ttbarAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     else return;
 
 
-    // number of b-tagged jets
-    int nBtaggedJets = 0;
+    // b-tagged jets
     for( std::vector<const reco::GenJet*>::const_iterator it = jet_diLept.begin(); it != jet_diLept.end(); ++it )
-      if( jet_btag_L[*it] ) ++nBtaggedJets;
+      if( jet_btag_L[*it] ) jet_diLept_btagged.push_back(*it);
 
-    if( nBtaggedJets>=1 )
+    if( jet_diLept_btagged.size()>=1 )
     {
-      if( diElec )      h1_CutFlow_diLept_elel->Fill(diLeptBtagCut);
-      else if( diMuon ) h1_CutFlow_diLept_mumu->Fill(diLeptBtagCut);
-      else if( diElMu ) h1_CutFlow_diLept_elmu->Fill(diLeptBtagCut);
+      if( diElec )
+      {
+        h1_CutFlow_diLept_elel->Fill(diLeptBtagCut);
+        h1_bTagMultiplicity_diLept_elel->Fill(jet_diLept_btagged.size());
+        for( std::vector<const reco::GenJet*>::const_iterator it = jet_diLept_btagged.begin(); it != jet_diLept_btagged.end(); ++it )
+        {
+          double mindRbJetJet = 1e6;
+          for( std::vector<const reco::GenJet*>::const_iterator jt = jet_diLept.begin(); jt != jet_diLept.end(); ++jt )
+          {
+            if( *it == *jt ) continue;
+            double tempdR = reco::deltaR( (*it)->p4(), (*jt)->p4() );
+            if( tempdR < mindRbJetJet ) mindRbJetJet = tempdR;
+          }
+          if( mindRbJetJet < 1e6 ) h1_mindRbJetJet_diLept_elel->Fill(mindRbJetJet);
+
+          double mindRbJetbJet = 1e6;
+          for( std::vector<const reco::GenJet*>::const_iterator jt = (it+1); jt != jet_diLept_btagged.end(); ++jt )
+          {
+            double tempdR = reco::deltaR( (*it)->p4(), (*jt)->p4() );
+            if( tempdR < mindRbJetbJet ) mindRbJetbJet = tempdR;
+          }
+          if( mindRbJetbJet < 1e6 ) h1_mindRbJetbJet_diLept_elel->Fill(mindRbJetbJet);
+        }
+      }
+      else if( diMuon )
+      {
+        h1_CutFlow_diLept_mumu->Fill(diLeptBtagCut);
+        h1_bTagMultiplicity_diLept_mumu->Fill(jet_diLept_btagged.size());
+        for( std::vector<const reco::GenJet*>::const_iterator it = jet_diLept_btagged.begin(); it != jet_diLept_btagged.end(); ++it )
+        {
+          double mindRbJetJet = 1e6;
+          for( std::vector<const reco::GenJet*>::const_iterator jt = jet_diLept.begin(); jt != jet_diLept.end(); ++jt )
+          {
+            if( *it == *jt ) continue;
+            double tempdR = reco::deltaR( (*it)->p4(), (*jt)->p4() );
+            if( tempdR < mindRbJetJet ) mindRbJetJet = tempdR;
+          }
+          if( mindRbJetJet < 1e6 ) h1_mindRbJetJet_diLept_mumu->Fill(mindRbJetJet);
+
+          double mindRbJetbJet = 1e6;
+          for( std::vector<const reco::GenJet*>::const_iterator jt = (it+1); jt != jet_diLept_btagged.end(); ++jt )
+          {
+            double tempdR = reco::deltaR( (*it)->p4(), (*jt)->p4() );
+            if( tempdR < mindRbJetbJet ) mindRbJetbJet = tempdR;
+          }
+          if( mindRbJetbJet < 1e6 ) h1_mindRbJetbJet_diLept_mumu->Fill(mindRbJetbJet);
+        }
+      }
+      else if( diElMu )
+      {
+        h1_CutFlow_diLept_elmu->Fill(diLeptBtagCut);
+        h1_bTagMultiplicity_diLept_elmu->Fill(jet_diLept_btagged.size());
+        for( std::vector<const reco::GenJet*>::const_iterator it = jet_diLept_btagged.begin(); it != jet_diLept_btagged.end(); ++it )
+        {
+          double mindRbJetJet = 1e6;
+          for( std::vector<const reco::GenJet*>::const_iterator jt = jet_diLept.begin(); jt != jet_diLept.end(); ++jt )
+          {
+            if( *it == *jt ) continue;
+            double tempdR = reco::deltaR( (*it)->p4(), (*jt)->p4() );
+            if( tempdR < mindRbJetJet ) mindRbJetJet = tempdR;
+          }
+          if( mindRbJetJet < 1e6 ) h1_mindRbJetJet_diLept_elmu->Fill(mindRbJetJet);
+
+          double mindRbJetbJet = 1e6;
+          for( std::vector<const reco::GenJet*>::const_iterator jt = (it+1); jt != jet_diLept_btagged.end(); ++jt )
+          {
+            double tempdR = reco::deltaR( (*it)->p4(), (*jt)->p4() );
+            if( tempdR < mindRbJetbJet ) mindRbJetbJet = tempdR;
+          }
+          if( mindRbJetbJet < 1e6 ) h1_mindRbJetbJet_diLept_elmu->Fill(mindRbJetbJet);
+        }
+      }
     }
     else
       return;
@@ -470,15 +574,60 @@ ttbarAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       return;
 
 
-    // number of b-tagged jets
-    int nBtaggedJets = 0;
+    // b-tagged jets
     for( std::vector<const reco::GenJet*>::const_iterator it = jet_semiLept.begin(); it != jet_semiLept.end(); ++it )
-      if( jet_btag_M[*it] ) ++nBtaggedJets;
+      if( jet_btag_M[*it] ) jet_semiLept_btagged.push_back(*it);
 
-    if( nBtaggedJets>=1 )
+    if( jet_semiLept_btagged.size()>=1 )
     {
-      if( semiEl )      h1_CutFlow_semiLept_el->Fill(semiLeptBtagCut);
-      else if( semiMu ) h1_CutFlow_semiLept_mu->Fill(semiLeptBtagCut);
+      if( semiEl )
+      {
+        h1_CutFlow_semiLept_el->Fill(semiLeptBtagCut);
+        h1_bTagMultiplicity_semiLept_el->Fill(jet_semiLept_btagged.size());
+        for( std::vector<const reco::GenJet*>::const_iterator it = jet_semiLept_btagged.begin(); it != jet_semiLept_btagged.end(); ++it )
+        {
+          double mindRbJetJet = 1e6;
+          for( std::vector<const reco::GenJet*>::const_iterator jt = jet_semiLept.begin(); jt != jet_semiLept.end(); ++jt )
+          {
+            if( *it == *jt) continue;
+            double tempdR = reco::deltaR( (*it)->p4(), (*jt)->p4() );
+            if( tempdR < mindRbJetJet ) mindRbJetJet = tempdR;
+          }
+          if( mindRbJetJet < 1e6 ) h1_mindRbJetJet_semiLept_el->Fill(mindRbJetJet);
+
+          double mindRbJetbJet = 1e6;
+          for( std::vector<const reco::GenJet*>::const_iterator jt = (it+1); jt != jet_semiLept_btagged.end(); ++jt )
+          {
+            double tempdR = reco::deltaR( (*it)->p4(), (*jt)->p4() );
+            if( tempdR < mindRbJetbJet ) mindRbJetbJet = tempdR;
+          }
+          if( mindRbJetbJet < 1e6 ) h1_mindRbJetbJet_semiLept_el->Fill(mindRbJetbJet);
+        }
+      }
+      else if( semiMu )
+      {
+        h1_CutFlow_semiLept_mu->Fill(semiLeptBtagCut);
+        h1_bTagMultiplicity_semiLept_mu->Fill(jet_semiLept_btagged.size());
+        for( std::vector<const reco::GenJet*>::const_iterator it = jet_semiLept_btagged.begin(); it != jet_semiLept_btagged.end(); ++it )
+        {
+          double mindRbJetJet = 1e6;
+          for( std::vector<const reco::GenJet*>::const_iterator jt = jet_semiLept.begin(); jt != jet_semiLept.end(); ++jt )
+          {
+            if( *it == *jt) continue;
+            double tempdR = reco::deltaR( (*it)->p4(), (*jt)->p4() );
+            if( tempdR < mindRbJetJet ) mindRbJetJet = tempdR;
+          }
+          if( mindRbJetJet < 1e6 ) h1_mindRbJetJet_semiLept_mu->Fill(mindRbJetJet);
+
+          double mindRbJetbJet = 1e6;
+          for( std::vector<const reco::GenJet*>::const_iterator jt = (it+1); jt != jet_semiLept_btagged.end(); ++jt )
+          {
+            double tempdR = reco::deltaR( (*it)->p4(), (*jt)->p4() );
+            if( tempdR < mindRbJetbJet ) mindRbJetbJet = tempdR;
+          }
+          if( mindRbJetbJet < 1e6 ) h1_mindRbJetbJet_semiLept_mu->Fill(mindRbJetbJet);
+        }
+      }
     }
     else
       return;
