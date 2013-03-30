@@ -13,7 +13,7 @@
 //
 // Original Author:  margaret zientek
 //         Created:  Fri Feb  8 12:31:07 CST 2013
-// $Id: ttbarAnalyzer.cc,v 1.3 2013/03/27 00:43:29 ferencek Exp $
+// $Id: ttbarAnalyzer.cc,v 1.4 2013/03/28 02:28:07 ferencek Exp $
 //
 // Analysis of a ttbar MC sample based on di-leptonic (TOP-12-007) and semi-leptonic (TOP-12-006) ttbar cross section measurements
 //
@@ -476,72 +476,192 @@ ttbarAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       {
         h1_CutFlow_diLept_elel->Fill(diLeptBtagCut);
         h1_bTagMultiplicity_diLept_elel->Fill(jet_diLept_btagged.size());
+
+        std::vector<std::pair<const reco::GenJet*,const reco::GenJet*> > filledbJetJetPairs, filledbJetbJetPairs;
+        // loop over b-tagged selected jets
         for( std::vector<const reco::GenJet*>::const_iterator it = jet_diLept_btagged.begin(); it != jet_diLept_btagged.end(); ++it )
         {
           double mindRbJetJet = 1e6;
+          const reco::GenJet* mindR_Jet = 0;
+          // loop over all selected jets
           for( std::vector<const reco::GenJet*>::const_iterator jt = jet_diLept.begin(); jt != jet_diLept.end(); ++jt )
           {
-            if( *it == *jt ) continue;
+            if( *it == *jt ) continue; // skip the b-tagged jet itself
             double tempdR = reco::deltaR( (*it)->p4(), (*jt)->p4() );
-            if( tempdR < mindRbJetJet ) mindRbJetJet = tempdR;
+            if( tempdR < mindRbJetJet ) { mindRbJetJet = tempdR; mindR_Jet = *jt; }
           }
-          if( mindRbJetJet < 1e6 ) h1_mindRbJetJet_diLept_elel->Fill(mindRbJetJet);
+          if( mindR_Jet != 0 )
+          {
+            bool alreadyFilled = false;
+            for( std::vector<std::pair<const reco::GenJet*,const reco::GenJet*> >::const_iterator pIt = filledbJetJetPairs.begin(); pIt != filledbJetJetPairs.end(); ++pIt )
+            {
+              if( (pIt->first==(*it) && pIt->second==mindR_Jet) || (pIt->first==mindR_Jet && pIt->second==(*it)) ) // if already filled
+              {
+                alreadyFilled = true;
+                break;
+              }
+            }
+            if( !alreadyFilled ) // if not already filled
+            {
+              filledbJetJetPairs.push_back( std::make_pair( *it, mindR_Jet ) );
+              h1_mindRbJetJet_diLept_elel->Fill(mindRbJetJet);
+            }
+          }
 
           double mindRbJetbJet = 1e6;
-          for( std::vector<const reco::GenJet*>::const_iterator jt = (it+1); jt != jet_diLept_btagged.end(); ++jt )
+          const reco::GenJet* mindR_bJet = 0;
+          // loop over all b-tagged selected jets
+          for( std::vector<const reco::GenJet*>::const_iterator jt = jet_diLept_btagged.begin(); jt != jet_diLept_btagged.end(); ++jt )
           {
+            if( *it == *jt ) continue; // skip the b-tagged jet itself
             double tempdR = reco::deltaR( (*it)->p4(), (*jt)->p4() );
-            if( tempdR < mindRbJetbJet ) mindRbJetbJet = tempdR;
+            if( tempdR < mindRbJetbJet ) { mindRbJetbJet = tempdR; mindR_bJet = *jt; }
           }
-          if( mindRbJetbJet < 1e6 ) h1_mindRbJetbJet_diLept_elel->Fill(mindRbJetbJet);
+          if( mindR_bJet != 0 )
+          {
+            bool alreadyFilled = false;
+            for( std::vector<std::pair<const reco::GenJet*,const reco::GenJet*> >::const_iterator pIt = filledbJetbJetPairs.begin(); pIt != filledbJetbJetPairs.end(); ++pIt )
+            {
+              if( (pIt->first==(*it) && pIt->second==mindR_bJet) || (pIt->first==mindR_bJet && pIt->second==(*it)) ) // if already filled
+              {
+                alreadyFilled = true;
+                break;
+              }
+            }
+            if( !alreadyFilled ) // if not already filled
+            {
+              filledbJetbJetPairs.push_back( std::make_pair( *it, mindR_bJet ) );
+              h1_mindRbJetbJet_diLept_elel->Fill(mindRbJetbJet);
+            }
+          }
         }
       }
       else if( diMuon )
       {
         h1_CutFlow_diLept_mumu->Fill(diLeptBtagCut);
         h1_bTagMultiplicity_diLept_mumu->Fill(jet_diLept_btagged.size());
+
+        std::vector<std::pair<const reco::GenJet*,const reco::GenJet*> > filledbJetJetPairs, filledbJetbJetPairs;
+        // loop over b-tagged selected jets
         for( std::vector<const reco::GenJet*>::const_iterator it = jet_diLept_btagged.begin(); it != jet_diLept_btagged.end(); ++it )
         {
           double mindRbJetJet = 1e6;
+          const reco::GenJet* mindR_Jet = 0;
+          // loop over all selected jets
           for( std::vector<const reco::GenJet*>::const_iterator jt = jet_diLept.begin(); jt != jet_diLept.end(); ++jt )
           {
-            if( *it == *jt ) continue;
+            if( *it == *jt ) continue; // skip the b-tagged jet itself
             double tempdR = reco::deltaR( (*it)->p4(), (*jt)->p4() );
-            if( tempdR < mindRbJetJet ) mindRbJetJet = tempdR;
+            if( tempdR < mindRbJetJet ) { mindRbJetJet = tempdR; mindR_Jet = *jt; }
           }
-          if( mindRbJetJet < 1e6 ) h1_mindRbJetJet_diLept_mumu->Fill(mindRbJetJet);
+          if( mindR_Jet != 0 )
+          {
+            bool alreadyFilled = false;
+            for( std::vector<std::pair<const reco::GenJet*,const reco::GenJet*> >::const_iterator pIt = filledbJetJetPairs.begin(); pIt != filledbJetJetPairs.end(); ++pIt )
+            {
+              if( (pIt->first==(*it) && pIt->second==mindR_Jet) || (pIt->first==mindR_Jet && pIt->second==(*it)) ) // if already filled
+              {
+                alreadyFilled = true;
+                break;
+              }
+            }
+            if( !alreadyFilled ) // if not already filled
+            {
+              filledbJetJetPairs.push_back( std::make_pair( *it, mindR_Jet ) );
+              h1_mindRbJetJet_diLept_mumu->Fill(mindRbJetJet);
+            }
+          }
 
           double mindRbJetbJet = 1e6;
-          for( std::vector<const reco::GenJet*>::const_iterator jt = (it+1); jt != jet_diLept_btagged.end(); ++jt )
+          const reco::GenJet* mindR_bJet = 0;
+          // loop over all b-tagged selected jets
+          for( std::vector<const reco::GenJet*>::const_iterator jt = jet_diLept_btagged.begin(); jt != jet_diLept_btagged.end(); ++jt )
           {
+            if( *it == *jt ) continue; // skip the b-tagged jet itself
             double tempdR = reco::deltaR( (*it)->p4(), (*jt)->p4() );
-            if( tempdR < mindRbJetbJet ) mindRbJetbJet = tempdR;
+            if( tempdR < mindRbJetbJet ) { mindRbJetbJet = tempdR; mindR_bJet = *jt; }
           }
-          if( mindRbJetbJet < 1e6 ) h1_mindRbJetbJet_diLept_mumu->Fill(mindRbJetbJet);
+          if( mindR_bJet != 0 )
+          {
+            bool alreadyFilled = false;
+            for( std::vector<std::pair<const reco::GenJet*,const reco::GenJet*> >::const_iterator pIt = filledbJetbJetPairs.begin(); pIt != filledbJetbJetPairs.end(); ++pIt )
+            {
+              if( (pIt->first==(*it) && pIt->second==mindR_bJet) || (pIt->first==mindR_bJet && pIt->second==(*it)) ) // if already filled
+              {
+                alreadyFilled = true;
+                break;
+              }
+            }
+            if( !alreadyFilled ) // if not already filled
+            {
+              filledbJetbJetPairs.push_back( std::make_pair( *it, mindR_bJet ) );
+              h1_mindRbJetbJet_diLept_mumu->Fill(mindRbJetbJet);
+            }
+          }
         }
       }
       else if( diElMu )
       {
         h1_CutFlow_diLept_elmu->Fill(diLeptBtagCut);
         h1_bTagMultiplicity_diLept_elmu->Fill(jet_diLept_btagged.size());
+
+        std::vector<std::pair<const reco::GenJet*,const reco::GenJet*> > filledbJetJetPairs, filledbJetbJetPairs;
+        // loop over b-tagged selected jets
         for( std::vector<const reco::GenJet*>::const_iterator it = jet_diLept_btagged.begin(); it != jet_diLept_btagged.end(); ++it )
         {
           double mindRbJetJet = 1e6;
+          const reco::GenJet* mindR_Jet = 0;
+          // loop over all selected jets
           for( std::vector<const reco::GenJet*>::const_iterator jt = jet_diLept.begin(); jt != jet_diLept.end(); ++jt )
           {
-            if( *it == *jt ) continue;
+            if( *it == *jt ) continue; // skip the b-tagged jet itself
             double tempdR = reco::deltaR( (*it)->p4(), (*jt)->p4() );
-            if( tempdR < mindRbJetJet ) mindRbJetJet = tempdR;
+            if( tempdR < mindRbJetJet ) { mindRbJetJet = tempdR; mindR_Jet = *jt; }
           }
-          if( mindRbJetJet < 1e6 ) h1_mindRbJetJet_diLept_elmu->Fill(mindRbJetJet);
+          if( mindR_Jet != 0 )
+          {
+            bool alreadyFilled = false;
+            for( std::vector<std::pair<const reco::GenJet*,const reco::GenJet*> >::const_iterator pIt = filledbJetJetPairs.begin(); pIt != filledbJetJetPairs.end(); ++pIt )
+            {
+              if( (pIt->first==(*it) && pIt->second==mindR_Jet) || (pIt->first==mindR_Jet && pIt->second==(*it)) ) // if already filled
+              {
+                alreadyFilled = true;
+                break;
+              }
+            }
+            if( !alreadyFilled ) // if not already filled
+            {
+              filledbJetJetPairs.push_back( std::make_pair( *it, mindR_Jet ) );
+              h1_mindRbJetJet_diLept_elmu->Fill(mindRbJetJet);
+            }
+          }
 
           double mindRbJetbJet = 1e6;
-          for( std::vector<const reco::GenJet*>::const_iterator jt = (it+1); jt != jet_diLept_btagged.end(); ++jt )
+          const reco::GenJet* mindR_bJet = 0;
+          // loop over all b-tagged selected jets
+          for( std::vector<const reco::GenJet*>::const_iterator jt = jet_diLept_btagged.begin(); jt != jet_diLept_btagged.end(); ++jt )
           {
+            if( *it == *jt ) continue; // skip the b-tagged jet itself
             double tempdR = reco::deltaR( (*it)->p4(), (*jt)->p4() );
-            if( tempdR < mindRbJetbJet ) mindRbJetbJet = tempdR;
+            if( tempdR < mindRbJetbJet ) { mindRbJetbJet = tempdR; mindR_bJet = *jt; }
           }
-          if( mindRbJetbJet < 1e6 ) h1_mindRbJetbJet_diLept_elmu->Fill(mindRbJetbJet);
+          if( mindR_bJet != 0 )
+          {
+            bool alreadyFilled = false;
+            for( std::vector<std::pair<const reco::GenJet*,const reco::GenJet*> >::const_iterator pIt = filledbJetbJetPairs.begin(); pIt != filledbJetbJetPairs.end(); ++pIt )
+            {
+              if( (pIt->first==(*it) && pIt->second==mindR_bJet) || (pIt->first==mindR_bJet && pIt->second==(*it)) ) // if already filled
+              {
+                alreadyFilled = true;
+                break;
+              }
+            }
+            if( !alreadyFilled ) // if not already filled
+            {
+              filledbJetbJetPairs.push_back( std::make_pair( *it, mindR_bJet ) );
+              h1_mindRbJetbJet_diLept_elmu->Fill(mindRbJetbJet);
+            }
+          }
         }
       }
     }
@@ -584,48 +704,128 @@ ttbarAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       {
         h1_CutFlow_semiLept_el->Fill(semiLeptBtagCut);
         h1_bTagMultiplicity_semiLept_el->Fill(jet_semiLept_btagged.size());
+
+        std::vector<std::pair<const reco::GenJet*,const reco::GenJet*> > filledbJetJetPairs, filledbJetbJetPairs;
+        // loop over b-tagged selected jets
         for( std::vector<const reco::GenJet*>::const_iterator it = jet_semiLept_btagged.begin(); it != jet_semiLept_btagged.end(); ++it )
         {
           double mindRbJetJet = 1e6;
+          const reco::GenJet* mindR_Jet = 0;
+          // loop over all selected jets
           for( std::vector<const reco::GenJet*>::const_iterator jt = jet_semiLept.begin(); jt != jet_semiLept.end(); ++jt )
           {
-            if( *it == *jt) continue;
+            if( *it == *jt ) continue; // skip the b-tagged jet itself
             double tempdR = reco::deltaR( (*it)->p4(), (*jt)->p4() );
-            if( tempdR < mindRbJetJet ) mindRbJetJet = tempdR;
+            if( tempdR < mindRbJetJet ) { mindRbJetJet = tempdR; mindR_Jet = *jt; }
           }
-          if( mindRbJetJet < 1e6 ) h1_mindRbJetJet_semiLept_el->Fill(mindRbJetJet);
+          if( mindR_Jet != 0 )
+          {
+            bool alreadyFilled = false;
+            for( std::vector<std::pair<const reco::GenJet*,const reco::GenJet*> >::const_iterator pIt = filledbJetJetPairs.begin(); pIt != filledbJetJetPairs.end(); ++pIt )
+            {
+              if( (pIt->first==(*it) && pIt->second==mindR_Jet) || (pIt->first==mindR_Jet && pIt->second==(*it)) ) // if already filled
+              {
+                alreadyFilled = true;
+                break;
+              }
+            }
+            if( !alreadyFilled ) // if not already filled
+            {
+              filledbJetJetPairs.push_back( std::make_pair( *it, mindR_Jet ) );
+              h1_mindRbJetJet_semiLept_el->Fill(mindRbJetJet);
+            }
+          }
 
           double mindRbJetbJet = 1e6;
-          for( std::vector<const reco::GenJet*>::const_iterator jt = (it+1); jt != jet_semiLept_btagged.end(); ++jt )
+          const reco::GenJet* mindR_bJet = 0;
+          // loop over all b-tagged selected jets
+          for( std::vector<const reco::GenJet*>::const_iterator jt = jet_semiLept_btagged.begin(); jt != jet_semiLept_btagged.end(); ++jt )
           {
+            if( *it == *jt ) continue; // skip the b-tagged jet itself
             double tempdR = reco::deltaR( (*it)->p4(), (*jt)->p4() );
-            if( tempdR < mindRbJetbJet ) mindRbJetbJet = tempdR;
+            if( tempdR < mindRbJetbJet ) { mindRbJetbJet = tempdR; mindR_bJet = *jt; }
           }
-          if( mindRbJetbJet < 1e6 ) h1_mindRbJetbJet_semiLept_el->Fill(mindRbJetbJet);
+          if( mindR_bJet != 0 )
+          {
+            bool alreadyFilled = false;
+            for( std::vector<std::pair<const reco::GenJet*,const reco::GenJet*> >::const_iterator pIt = filledbJetbJetPairs.begin(); pIt != filledbJetbJetPairs.end(); ++pIt )
+            {
+              if( (pIt->first==(*it) && pIt->second==mindR_bJet) || (pIt->first==mindR_bJet && pIt->second==(*it)) ) // if already filled
+              {
+                alreadyFilled = true;
+                break;
+              }
+            }
+            if( !alreadyFilled ) // if not already filled
+            {
+              filledbJetbJetPairs.push_back( std::make_pair( *it, mindR_bJet ) );
+              h1_mindRbJetbJet_semiLept_el->Fill(mindRbJetbJet);
+            }
+          }
         }
       }
       else if( semiMu )
       {
         h1_CutFlow_semiLept_mu->Fill(semiLeptBtagCut);
         h1_bTagMultiplicity_semiLept_mu->Fill(jet_semiLept_btagged.size());
+
+        std::vector<std::pair<const reco::GenJet*,const reco::GenJet*> > filledbJetJetPairs, filledbJetbJetPairs;
+        // loop over b-tagged selected jets
         for( std::vector<const reco::GenJet*>::const_iterator it = jet_semiLept_btagged.begin(); it != jet_semiLept_btagged.end(); ++it )
         {
           double mindRbJetJet = 1e6;
+          const reco::GenJet* mindR_Jet = 0;
+          // loop over all selected jets
           for( std::vector<const reco::GenJet*>::const_iterator jt = jet_semiLept.begin(); jt != jet_semiLept.end(); ++jt )
           {
-            if( *it == *jt) continue;
+            if( *it == *jt ) continue; // skip the b-tagged jet itself
             double tempdR = reco::deltaR( (*it)->p4(), (*jt)->p4() );
-            if( tempdR < mindRbJetJet ) mindRbJetJet = tempdR;
+            if( tempdR < mindRbJetJet ) { mindRbJetJet = tempdR; mindR_Jet = *jt; }
           }
-          if( mindRbJetJet < 1e6 ) h1_mindRbJetJet_semiLept_mu->Fill(mindRbJetJet);
+          if( mindR_Jet != 0 )
+          {
+            bool alreadyFilled = false;
+            for( std::vector<std::pair<const reco::GenJet*,const reco::GenJet*> >::const_iterator pIt = filledbJetJetPairs.begin(); pIt != filledbJetJetPairs.end(); ++pIt )
+            {
+              if( (pIt->first==(*it) && pIt->second==mindR_Jet) || (pIt->first==mindR_Jet && pIt->second==(*it)) ) // if already filled
+              {
+                alreadyFilled = true;
+                break;
+              }
+            }
+            if( !alreadyFilled ) // if not already filled
+            {
+              filledbJetJetPairs.push_back( std::make_pair( *it, mindR_Jet ) );
+              h1_mindRbJetJet_semiLept_mu->Fill(mindRbJetJet);
+            }
+          }
 
           double mindRbJetbJet = 1e6;
-          for( std::vector<const reco::GenJet*>::const_iterator jt = (it+1); jt != jet_semiLept_btagged.end(); ++jt )
+          const reco::GenJet* mindR_bJet = 0;
+          // loop over all b-tagged selected jets
+          for( std::vector<const reco::GenJet*>::const_iterator jt = jet_semiLept_btagged.begin(); jt != jet_semiLept_btagged.end(); ++jt )
           {
+            if( *it == *jt ) continue; // skip the b-tagged jet itself
             double tempdR = reco::deltaR( (*it)->p4(), (*jt)->p4() );
-            if( tempdR < mindRbJetbJet ) mindRbJetbJet = tempdR;
+            if( tempdR < mindRbJetbJet ) { mindRbJetbJet = tempdR; mindR_bJet = *jt; }
           }
-          if( mindRbJetbJet < 1e6 ) h1_mindRbJetbJet_semiLept_mu->Fill(mindRbJetbJet);
+          if( mindR_bJet != 0 )
+          {
+            bool alreadyFilled = false;
+            for( std::vector<std::pair<const reco::GenJet*,const reco::GenJet*> >::const_iterator pIt = filledbJetbJetPairs.begin(); pIt != filledbJetbJetPairs.end(); ++pIt )
+            {
+              if( (pIt->first==(*it) && pIt->second==mindR_bJet) || (pIt->first==mindR_bJet && pIt->second==(*it)) ) // if already filled
+              {
+                alreadyFilled = true;
+                break;
+              }
+            }
+            if( !alreadyFilled ) // if not already filled
+            {
+              filledbJetbJetPairs.push_back( std::make_pair( *it, mindR_bJet ) );
+              h1_mindRbJetbJet_semiLept_mu->Fill(mindRbJetbJet);
+            }
+          }
         }
       }
     }
