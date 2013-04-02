@@ -53,14 +53,14 @@ void calc_eff_semiLept(const string& fInputFile, const string& fHisto)
 }
 
 
-void plot_dR()
+void plot_dR_diLept()
 {
   gROOT->SetBatch(kTRUE);
   gROOT->ForceStyle();
 
   TFile *file = new TFile("TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola__Summer12_DR53X-PU_S10_START53_V7C-v1__AODSIM.root");
 
-  TH2D *h1_histo = (TH2D*)file->Get("analyzer/h1_CutFlow_diLept_mumu");
+  TH2D *h1_histo = (TH2D*)file->Get("analyzer/h1_CutFlow_diLept_elel");
   double nTotal = h1_histo->GetBinContent(1);
 
   TH2D *h2_dRbJetJet_elel = (TH2D*)file->Get("analyzer/h1_mindRbJetJet_diLept_elel");
@@ -96,6 +96,45 @@ void plot_dR()
 }
 
 
+void plot_dR_semiLept()
+{
+  gROOT->SetBatch(kTRUE);
+  gROOT->ForceStyle();
+
+  TFile *file = new TFile("TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola__Summer12_DR53X-PU_S10_START53_V7C-v1__AODSIM.root");
+
+  TH2D *h1_histo = (TH2D*)file->Get("analyzer/h1_CutFlow_semiLept_el");
+  double nTotal = h1_histo->GetBinContent(1);
+
+  TH2D *h2_dRbJetJet_el = (TH2D*)file->Get("analyzer/h1_mindRbJetJet_semiLept_el");
+  TH2D *h2_dRbJetJet_mu = (TH2D*)file->Get("analyzer/h1_mindRbJetJet_semiLept_mu");
+
+  TH2D *h2_dRbJetbJet_el = (TH2D*)file->Get("analyzer/h1_mindRbJetbJet_semiLept_el");
+  TH2D *h2_dRbJetbJet_mu = (TH2D*)file->Get("analyzer/h1_mindRbJetbJet_semiLept_mu");
+
+  h2_dRbJetJet_el->Add(h2_dRbJetJet_mu);
+
+  h2_dRbJetbJet_el->Add(h2_dRbJetbJet_mu);
+
+  h2_dRbJetJet_el->Scale( (227.*20000.)/nTotal );
+  h2_dRbJetbJet_el->Scale( (227.*20000.)/nTotal );
+
+  TCanvas *c = new TCanvas("c", "",1000,800);
+  c->cd();
+
+  h2_dRbJetJet_el->Draw("hist");
+
+  c->SaveAs("h1_dRbJetJet_ttbar_semiLept.eps");
+
+  h2_dRbJetbJet_el->Draw("hist");
+
+  c->SaveAs("h1_dRbJetbJet_ttbar_semiLept.eps");
+
+  delete c;
+  delete file;
+}
+
+
 void performCalculations()
 {
   calc_eff_diLept("TTJets_MassiveBinDECAY_TuneZ2star_8TeV-madgraph-tauola__Summer12_DR53X-PU_S10_START53_V7C-v1__AODSIM.root", "analyzer/h1_CutFlow_diLept_mumu");
@@ -108,5 +147,7 @@ void performCalculations()
 
 void makePlots()
 {
-  plot_dR();
+  plot_dR_diLept();
+
+  plot_dR_semiLept();
 }
