@@ -204,6 +204,8 @@ ttbarAnalyzer::ttbarAnalyzer(const edm::ParameterSet& iConfig) :
   double cutmax=9.5;
 
   h1_CutFlow_diLept_elel = fs->make<TH1D>("h1_CutFlow_diLept_elel",";Cut number;Number of events",ncutBins,cutmin,cutmax);
+  h1_CutFlow_diLept_elel->Sumw2();
+  h1_CutFlow_diLept_elel->SetDefaultSumw2(kTRUE); // to have TH1::Sumw2() automatically called for all subsequent histograms
   h1_CutFlow_diLept_mumu = fs->make<TH1D>("h1_CutFlow_diLept_mumu",";Cut number;Number of events",ncutBins,cutmin,cutmax);
   h1_CutFlow_diLept_elmu = fs->make<TH1D>("h1_CutFlow_diLept_elmu",";Cut number;Number of events",ncutBins,cutmin,cutmax);
   h1_CutFlow_semiLept_el = fs->make<TH1D>("h1_CutFlow_semiLept_el",";Cut number;Number of events",ncutBins,cutmin,cutmax);
