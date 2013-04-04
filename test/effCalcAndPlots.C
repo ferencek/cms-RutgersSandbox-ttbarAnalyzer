@@ -63,13 +63,13 @@ void plot_dR_diLept()
   TH2D *h1_histo = (TH2D*)file->Get("analyzer/h1_CutFlow_diLept_elel");
   double nTotal = h1_histo->GetBinContent(1);
 
-  TH2D *h2_dRbJetJet_elel = (TH2D*)file->Get("analyzer/h1_mindRbJetJet_diLept_elel");
-  TH2D *h2_dRbJetJet_mumu = (TH2D*)file->Get("analyzer/h1_mindRbJetJet_diLept_mumu");
-  TH2D *h2_dRbJetJet_elmu = (TH2D*)file->Get("analyzer/h1_mindRbJetJet_diLept_elmu");
+  TH2D *h2_dRbJetJet_elel = (TH2D*)file->Get("analyzer/h1_mindR_bJetJet_diLept_elel");
+  TH2D *h2_dRbJetJet_mumu = (TH2D*)file->Get("analyzer/h1_mindR_bJetJet_diLept_mumu");
+  TH2D *h2_dRbJetJet_elmu = (TH2D*)file->Get("analyzer/h1_mindR_bJetJet_diLept_elmu");
 
-  TH2D *h2_dRbJetbJet_elel = (TH2D*)file->Get("analyzer/h1_mindRbJetbJet_diLept_elel");
-  TH2D *h2_dRbJetbJet_mumu = (TH2D*)file->Get("analyzer/h1_mindRbJetbJet_diLept_mumu");
-  TH2D *h2_dRbJetbJet_elmu = (TH2D*)file->Get("analyzer/h1_mindRbJetbJet_diLept_elmu");
+  TH2D *h2_dRbJetbJet_elel = (TH2D*)file->Get("analyzer/h1_mindR_bJetbJet_diLept_elel");
+  TH2D *h2_dRbJetbJet_mumu = (TH2D*)file->Get("analyzer/h1_mindR_bJetbJet_diLept_mumu");
+  TH2D *h2_dRbJetbJet_elmu = (TH2D*)file->Get("analyzer/h1_mindR_bJetbJet_diLept_elmu");
 
   h2_dRbJetJet_elel->Add(h2_dRbJetJet_mumu);
   h2_dRbJetJet_elel->Add(h2_dRbJetJet_elmu);
@@ -85,11 +85,11 @@ void plot_dR_diLept()
 
   h2_dRbJetJet_elel->Draw("hist");
 
-  c->SaveAs("h1_dRbJetJet_ttbar_diLept.eps");
+  c->SaveAs("h1_mindR_bJetJet_ttbar_diLept.eps");
 
   h2_dRbJetbJet_elel->Draw("hist");
 
-  c->SaveAs("h1_dRbJetbJet_ttbar_diLept.eps");
+  c->SaveAs("h1_mindR_bJetbJet_ttbar_diLept.eps");
 
   delete c;
   delete file;
@@ -106,11 +106,11 @@ void plot_dR_semiLept()
   TH2D *h1_histo = (TH2D*)file->Get("analyzer/h1_CutFlow_semiLept_el");
   double nTotal = h1_histo->GetBinContent(1);
 
-  TH2D *h2_dRbJetJet_el = (TH2D*)file->Get("analyzer/h1_mindRbJetJet_semiLept_el");
-  TH2D *h2_dRbJetJet_mu = (TH2D*)file->Get("analyzer/h1_mindRbJetJet_semiLept_mu");
+  TH2D *h2_dRbJetJet_el = (TH2D*)file->Get("analyzer/h1_mindR_bJetJet_semiLept_el");
+  TH2D *h2_dRbJetJet_mu = (TH2D*)file->Get("analyzer/h1_mindR_bJetJet_semiLept_mu");
 
-  TH2D *h2_dRbJetbJet_el = (TH2D*)file->Get("analyzer/h1_mindRbJetbJet_semiLept_el");
-  TH2D *h2_dRbJetbJet_mu = (TH2D*)file->Get("analyzer/h1_mindRbJetbJet_semiLept_mu");
+  TH2D *h2_dRbJetbJet_el = (TH2D*)file->Get("analyzer/h1_mindR_bJetbJet_semiLept_el");
+  TH2D *h2_dRbJetbJet_mu = (TH2D*)file->Get("analyzer/h1_mindR_bJetbJet_semiLept_mu");
 
   h2_dRbJetJet_el->Add(h2_dRbJetJet_mu);
 
@@ -124,11 +124,11 @@ void plot_dR_semiLept()
 
   h2_dRbJetJet_el->Draw("hist");
 
-  c->SaveAs("h1_dRbJetJet_ttbar_semiLept.eps");
+  c->SaveAs("h1_mindR_bJetJet_ttbar_semiLept.eps");
 
   h2_dRbJetbJet_el->Draw("hist");
 
-  c->SaveAs("h1_dRbJetbJet_ttbar_semiLept.eps");
+  c->SaveAs("h1_mindR_bJetbJet_ttbar_semiLept.eps");
 
   delete c;
   delete file;
