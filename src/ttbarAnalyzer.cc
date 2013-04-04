@@ -223,23 +223,23 @@ ttbarAnalyzer::ttbarAnalyzer(const edm::ParameterSet& iConfig) :
   h1_mindR_bJetJet_semiLept_el = fs->make<TH1D>("h1_mindR_bJetJet_semiLept_el",";min#DeltaR(b jet,jet);Number of entries",100,0.,5.);
   h1_mindR_bJetJet_semiLept_mu = fs->make<TH1D>("h1_mindR_bJetJet_semiLept_mu",";min#DeltaR(b jet,jet);Number of entries",100,0.,5.);
 
-  h2_mindR_bJetPt_bJetJet_diLept_elel = fs->make<TH2D>("h1_mindR_bJetPt_bJetJet_diLept_elel",";min#DeltaR(b jet,jet);b jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
-  h2_mindR_bJetPt_bJetJet_diLept_mumu = fs->make<TH2D>("h1_mindR_bJetPt_bJetJet_diLept_mumu",";min#DeltaR(b jet,jet);b jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
-  h2_mindR_bJetPt_bJetJet_diLept_elmu = fs->make<TH2D>("h1_mindR_bJetPt_bJetJet_diLept_elmu",";min#DeltaR(b jet,jet);b jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
-  h2_mindR_bJetPt_bJetJet_semiLept_el = fs->make<TH2D>("h1_mindR_bJetPt_bJetJet_semiLept_el",";min#DeltaR(b jet,jet);b jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
-  h2_mindR_bJetPt_bJetJet_semiLept_mu = fs->make<TH2D>("h1_mindR_bJetPt_bJetJet_semiLept_mu",";min#DeltaR(b jet,jet);b jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
+  h2_mindR_bJetPt_bJetJet_diLept_elel = fs->make<TH2D>("h2_mindR_bJetPt_bJetJet_diLept_elel",";min#DeltaR(b jet,jet);b jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
+  h2_mindR_bJetPt_bJetJet_diLept_mumu = fs->make<TH2D>("h2_mindR_bJetPt_bJetJet_diLept_mumu",";min#DeltaR(b jet,jet);b jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
+  h2_mindR_bJetPt_bJetJet_diLept_elmu = fs->make<TH2D>("h2_mindR_bJetPt_bJetJet_diLept_elmu",";min#DeltaR(b jet,jet);b jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
+  h2_mindR_bJetPt_bJetJet_semiLept_el = fs->make<TH2D>("h2_mindR_bJetPt_bJetJet_semiLept_el",";min#DeltaR(b jet,jet);b jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
+  h2_mindR_bJetPt_bJetJet_semiLept_mu = fs->make<TH2D>("h2_mindR_bJetPt_bJetJet_semiLept_mu",";min#DeltaR(b jet,jet);b jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
 
-  h2_mindR_JetPt_bJetJet_diLept_elel = fs->make<TH2D>("h1_mindR_JetPt_bJetJet_diLept_elel",";min#DeltaR(b jet,jet);Jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
-  h2_mindR_JetPt_bJetJet_diLept_mumu = fs->make<TH2D>("h1_mindR_JetPt_bJetJet_diLept_mumu",";min#DeltaR(b jet,jet);Jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
-  h2_mindR_JetPt_bJetJet_diLept_elmu = fs->make<TH2D>("h1_mindR_JetPt_bJetJet_diLept_elmu",";min#DeltaR(b jet,jet);Jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
-  h2_mindR_JetPt_bJetJet_semiLept_el = fs->make<TH2D>("h1_mindR_JetPt_bJetJet_semiLept_el",";min#DeltaR(b jet,jet);Jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
-  h2_mindR_JetPt_bJetJet_semiLept_mu = fs->make<TH2D>("h1_mindR_JetPt_bJetJet_semiLept_mu",";min#DeltaR(b jet,jet);Jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
+  h2_mindR_JetPt_bJetJet_diLept_elel = fs->make<TH2D>("h2_mindR_JetPt_bJetJet_diLept_elel",";min#DeltaR(b jet,jet);Jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
+  h2_mindR_JetPt_bJetJet_diLept_mumu = fs->make<TH2D>("h2_mindR_JetPt_bJetJet_diLept_mumu",";min#DeltaR(b jet,jet);Jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
+  h2_mindR_JetPt_bJetJet_diLept_elmu = fs->make<TH2D>("h2_mindR_JetPt_bJetJet_diLept_elmu",";min#DeltaR(b jet,jet);Jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
+  h2_mindR_JetPt_bJetJet_semiLept_el = fs->make<TH2D>("h2_mindR_JetPt_bJetJet_semiLept_el",";min#DeltaR(b jet,jet);Jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
+  h2_mindR_JetPt_bJetJet_semiLept_mu = fs->make<TH2D>("h2_mindR_JetPt_bJetJet_semiLept_mu",";min#DeltaR(b jet,jet);Jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
 
-  h2_mindR_FatJetPt_bJetJet_diLept_elel = fs->make<TH2D>("h1_mindR_FatJetPt_bJetJet_diLept_elel",";min#DeltaR(b jet,jet);Fat jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
-  h2_mindR_FatJetPt_bJetJet_diLept_mumu = fs->make<TH2D>("h1_mindR_FatJetPt_bJetJet_diLept_mumu",";min#DeltaR(b jet,jet);Fat jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
-  h2_mindR_FatJetPt_bJetJet_diLept_elmu = fs->make<TH2D>("h1_mindR_FatJetPt_bJetJet_diLept_elmu",";min#DeltaR(b jet,jet);Fat jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
-  h2_mindR_FatJetPt_bJetJet_semiLept_el = fs->make<TH2D>("h1_mindR_FatJetPt_bJetJet_semiLept_el",";min#DeltaR(b jet,jet);Fat jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
-  h2_mindR_FatJetPt_bJetJet_semiLept_mu = fs->make<TH2D>("h1_mindR_FatJetPt_bJetJet_semiLept_mu",";min#DeltaR(b jet,jet);Fat jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
+  h2_mindR_FatJetPt_bJetJet_diLept_elel = fs->make<TH2D>("h2_mindR_FatJetPt_bJetJet_diLept_elel",";min#DeltaR(b jet,jet);Fat jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
+  h2_mindR_FatJetPt_bJetJet_diLept_mumu = fs->make<TH2D>("h2_mindR_FatJetPt_bJetJet_diLept_mumu",";min#DeltaR(b jet,jet);Fat jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
+  h2_mindR_FatJetPt_bJetJet_diLept_elmu = fs->make<TH2D>("h2_mindR_FatJetPt_bJetJet_diLept_elmu",";min#DeltaR(b jet,jet);Fat jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
+  h2_mindR_FatJetPt_bJetJet_semiLept_el = fs->make<TH2D>("h2_mindR_FatJetPt_bJetJet_semiLept_el",";min#DeltaR(b jet,jet);Fat jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
+  h2_mindR_FatJetPt_bJetJet_semiLept_mu = fs->make<TH2D>("h2_mindR_FatJetPt_bJetJet_semiLept_mu",";min#DeltaR(b jet,jet);Fat jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
   
   h1_mindR_bJetbJet_diLept_elel = fs->make<TH1D>("h1_mindR_bJetbJet_diLept_elel",";min#DeltaR(b jet,b jet);Number of entries",100,0.,5.);
   h1_mindR_bJetbJet_diLept_mumu = fs->make<TH1D>("h1_mindR_bJetbJet_diLept_mumu",";min#DeltaR(b jet,b jet);Number of entries",100,0.,5.);
@@ -247,23 +247,23 @@ ttbarAnalyzer::ttbarAnalyzer(const edm::ParameterSet& iConfig) :
   h1_mindR_bJetbJet_semiLept_el = fs->make<TH1D>("h1_mindR_bJetbJet_semiLept_el",";min#DeltaR(b jet,b jet);Number of entries",100,0.,5.);
   h1_mindR_bJetbJet_semiLept_mu = fs->make<TH1D>("h1_mindR_bJetbJet_semiLept_mu",";min#DeltaR(b jet,b jet);Number of entries",100,0.,5.);
 
-  h2_mindR_bJet1Pt_bJetbJet_diLept_elel = fs->make<TH2D>("h1_mindR_bJet1Pt_bJetbJet_diLept_elel",";min#DeltaR(b jet,b jet);b jet_{1} p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
-  h2_mindR_bJet1Pt_bJetbJet_diLept_mumu = fs->make<TH2D>("h1_mindR_bJet1Pt_bJetbJet_diLept_mumu",";min#DeltaR(b jet,b jet);b jet_{1} p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
-  h2_mindR_bJet1Pt_bJetbJet_diLept_elmu = fs->make<TH2D>("h1_mindR_bJet1Pt_bJetbJet_diLept_elmu",";min#DeltaR(b jet,b jet);b jet_{1} p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
-  h2_mindR_bJet1Pt_bJetbJet_semiLept_el = fs->make<TH2D>("h1_mindR_bJet1Pt_bJetbJet_semiLept_el",";min#DeltaR(b jet,b jet);b jet_{1} p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
-  h2_mindR_bJet1Pt_bJetbJet_semiLept_mu = fs->make<TH2D>("h1_mindR_bJet1Pt_bJetbJet_semiLept_mu",";min#DeltaR(b jet,b jet);b jet_{1} p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
+  h2_mindR_bJet1Pt_bJetbJet_diLept_elel = fs->make<TH2D>("h2_mindR_bJet1Pt_bJetbJet_diLept_elel",";min#DeltaR(b jet,b jet);b jet_{1} p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
+  h2_mindR_bJet1Pt_bJetbJet_diLept_mumu = fs->make<TH2D>("h2_mindR_bJet1Pt_bJetbJet_diLept_mumu",";min#DeltaR(b jet,b jet);b jet_{1} p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
+  h2_mindR_bJet1Pt_bJetbJet_diLept_elmu = fs->make<TH2D>("h2_mindR_bJet1Pt_bJetbJet_diLept_elmu",";min#DeltaR(b jet,b jet);b jet_{1} p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
+  h2_mindR_bJet1Pt_bJetbJet_semiLept_el = fs->make<TH2D>("h2_mindR_bJet1Pt_bJetbJet_semiLept_el",";min#DeltaR(b jet,b jet);b jet_{1} p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
+  h2_mindR_bJet1Pt_bJetbJet_semiLept_mu = fs->make<TH2D>("h2_mindR_bJet1Pt_bJetbJet_semiLept_mu",";min#DeltaR(b jet,b jet);b jet_{1} p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
 
-  h2_mindR_bJet2Pt_bJetbJet_diLept_elel = fs->make<TH2D>("h1_mindR_bJet2Pt_bJetbJet_diLept_elel",";min#DeltaR(b jet,b jet);b jet_{2} p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
-  h2_mindR_bJet2Pt_bJetbJet_diLept_mumu = fs->make<TH2D>("h1_mindR_bJet2Pt_bJetbJet_diLept_mumu",";min#DeltaR(b jet,b jet);b jet_{2} p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
-  h2_mindR_bJet2Pt_bJetbJet_diLept_elmu = fs->make<TH2D>("h1_mindR_bJet2Pt_bJetbJet_diLept_elmu",";min#DeltaR(b jet,b jet);b jet_{2} p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
-  h2_mindR_bJet2Pt_bJetbJet_semiLept_el = fs->make<TH2D>("h1_mindR_bJet2Pt_bJetbJet_semiLept_el",";min#DeltaR(b jet,b jet);b jet_{2} p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
-  h2_mindR_bJet2Pt_bJetbJet_semiLept_mu = fs->make<TH2D>("h1_mindR_bJet2Pt_bJetbJet_semiLept_mu",";min#DeltaR(b jet,b jet);b jet_{2} p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
+  h2_mindR_bJet2Pt_bJetbJet_diLept_elel = fs->make<TH2D>("h2_mindR_bJet2Pt_bJetbJet_diLept_elel",";min#DeltaR(b jet,b jet);b jet_{2} p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
+  h2_mindR_bJet2Pt_bJetbJet_diLept_mumu = fs->make<TH2D>("h2_mindR_bJet2Pt_bJetbJet_diLept_mumu",";min#DeltaR(b jet,b jet);b jet_{2} p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
+  h2_mindR_bJet2Pt_bJetbJet_diLept_elmu = fs->make<TH2D>("h2_mindR_bJet2Pt_bJetbJet_diLept_elmu",";min#DeltaR(b jet,b jet);b jet_{2} p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
+  h2_mindR_bJet2Pt_bJetbJet_semiLept_el = fs->make<TH2D>("h2_mindR_bJet2Pt_bJetbJet_semiLept_el",";min#DeltaR(b jet,b jet);b jet_{2} p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
+  h2_mindR_bJet2Pt_bJetbJet_semiLept_mu = fs->make<TH2D>("h2_mindR_bJet2Pt_bJetbJet_semiLept_mu",";min#DeltaR(b jet,b jet);b jet_{2} p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
 
-  h2_mindR_FatJetPt_bJetbJet_diLept_elel = fs->make<TH2D>("h1_mindR_FatJetPt_bJetbJet_diLept_elel",";min#DeltaR(b jet,b jet);Fat jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
-  h2_mindR_FatJetPt_bJetbJet_diLept_mumu = fs->make<TH2D>("h1_mindR_FatJetPt_bJetbJet_diLept_mumu",";min#DeltaR(b jet,b jet);Fat jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
-  h2_mindR_FatJetPt_bJetbJet_diLept_elmu = fs->make<TH2D>("h1_mindR_FatJetPt_bJetbJet_diLept_elmu",";min#DeltaR(b jet,b jet);Fat jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
-  h2_mindR_FatJetPt_bJetbJet_semiLept_el = fs->make<TH2D>("h1_mindR_FatJetPt_bJetbJet_semiLept_el",";min#DeltaR(b jet,b jet);Fat jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
-  h2_mindR_FatJetPt_bJetbJet_semiLept_mu = fs->make<TH2D>("h1_mindR_FatJetPt_bJetbJet_semiLept_mu",";min#DeltaR(b jet,b jet);Fat jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
+  h2_mindR_FatJetPt_bJetbJet_diLept_elel = fs->make<TH2D>("h2_mindR_FatJetPt_bJetbJet_diLept_elel",";min#DeltaR(b jet,b jet);Fat jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
+  h2_mindR_FatJetPt_bJetbJet_diLept_mumu = fs->make<TH2D>("h2_mindR_FatJetPt_bJetbJet_diLept_mumu",";min#DeltaR(b jet,b jet);Fat jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
+  h2_mindR_FatJetPt_bJetbJet_diLept_elmu = fs->make<TH2D>("h2_mindR_FatJetPt_bJetbJet_diLept_elmu",";min#DeltaR(b jet,b jet);Fat jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
+  h2_mindR_FatJetPt_bJetbJet_semiLept_el = fs->make<TH2D>("h2_mindR_FatJetPt_bJetbJet_semiLept_el",";min#DeltaR(b jet,b jet);Fat jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
+  h2_mindR_FatJetPt_bJetbJet_semiLept_mu = fs->make<TH2D>("h2_mindR_FatJetPt_bJetbJet_semiLept_mu",";min#DeltaR(b jet,b jet);Fat jet p_{T} [GeV];Number of entries",100,0.,5.,240,0.,600.);
 }
 
 
